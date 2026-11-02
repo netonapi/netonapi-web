@@ -265,7 +265,7 @@ interface PublicSeo {
 - **description** 按字素（`Intl.Segmenter`）截到 160，换行与连续空白压成一个空格；`verification` 的 Bing 输出为 `msvalidate.01`、百度为 `baidu-site-verification`。
 - **RSS 发现**：`alternates.feeds` 输出 `<link rel="alternate" type="application/rss+xml">`；站点 feed 由底座在所有公开页输出。
 - 站点验证（`verification`）输出为对应的 meta 标签。
-- **本地结构化数据校验（C5）**：Rich Results Test 只认公网地址，上线前用同一套规则在本地与 CI 里卡住——`pnpm structured-data <url>…`（`scripts/structured-data/validate.mts`）：@adobe/structured-data-validator 按钉住版本的 schema.org 词表（30.1，首次下载后缓存在 `NETON_SCHEMA_ORG_CACHE`，缺省 `~/.cache/neton`）校验类型与属性，并执行 Google 富媒体结果的规则（BreadcrumbList、ListItem、Organization、Person 等由库内置；Article / NewsArticle / BlogPosting 由底座补的处理器 `news-article.mjs` 执行：headline、绝对地址的 image、带时区的 datePublished、有 name 的 author 必须有，dateModified 缺失或早于发布时间、author 没有 url 记警告）。有 ERROR 退出码 1。底座端到端测试校验夹具首页与对象页，产品 fork（itwind）的端到端测试校验首页、文章、频道、栏目。上线后的外部校验（Rich Results Test、Search Console 的增强功能报告）见产品的部署文档。
+- **本地结构化数据校验（C5）**：Rich Results Test 只认公网地址，上线前用同一套规则在本地与 CI 里卡住——`pnpm structured-data <url>…`（`scripts/structured-data/validate.mts`）：@adobe/structured-data-validator 按钉住版本的 schema.org 词表（30.1，首次下载后缓存在 `NETON_SCHEMA_ORG_CACHE`，缺省 `~/.cache/neton`）校验类型与属性，并执行 Google 富媒体结果的规则（BreadcrumbList、ListItem、Organization、Person 等由库内置；Article / NewsArticle / BlogPosting 由底座补的处理器 `news-article.mjs` 执行：headline、绝对地址的 image、带时区的 datePublished、有 name 的 author 必须有，dateModified 缺失或早于发布时间、author 没有 url 记警告）。有 ERROR 退出码 1。`jsonLd.article` 因此**总是**输出 author：调用方给的作者（缺省 Person，机构署名用 `kind: "Organization"`），不给时以发布方 Organization 署名，不输出空作者。底座端到端测试校验夹具首页与对象页，产品 fork（itwind）的端到端测试校验首页、文章、频道、栏目。上线后的外部校验（Rich Results Test、Search Console 的增强功能报告）见产品的部署文档。
 
 ## 7. 状态语义
 
@@ -412,7 +412,7 @@ CDN 的配置**由站点配置与公开路由生成**（`pnpm cdn:rules [--text]
 - 登录 / 注册 / 短信登录的 Route Handler 成功后按 `next` 跳回。`next` 必须是本站相对路径：以 `/` 开头、不以 `//` 或 `/\` 开头、不进 `/api/`，解码后再检查一次；不合格一律回 `consoleBasePath`。
 - 退出登录（`/api/auth/logout`）支持 `next`，门户上退出留在当前页。
 - **整页跳转（产品决定 6）**，不做登录弹层——简单、对密码管理器与人机验证最友好。
-- **短信验证码登录在底座**（产品决定 6）：登录页按站点配置 `auth.loginMethods` 显示「验证码登录 / 密码登录」页签，复用 account 模块已有的 App 接口——发码经 `/api/backend` 匿名代理调 `POST /app/auth/send-sms-code`（`scene = 1`，人机验证动作 `send_code`），登录走底座 `POST /api/auth/sms-login` → `/app/auth/sms-login`（号码首次出现时后端按注册策略开户）。网页登录统一带 `device.platform = "web"`。
+- **短信验证码登录在底座**（产品决定 6）：登录页按站点配置 `auth.loginMethods` 显示「验证码登录 / 密码登录」页签，复用 account 模块已有的 App 接口——发码经 `/api/backend` 匿名代理调 `POST /app/auth/send-sms-code`（`scene = 1`，人机验证动作 `send_code`），登录走底座 `POST /api/auth/sms-login` → `/app/auth/sms-login`（号码首次出现时后端按注册策略开户）。网页登录 / 注册统一带 `device = { platform: "web", deviceId }`：`deviceId` 是浏览器首次使用时用安全随机源生成并存进 localStorage 的 UUID v4（小写带连字符，runtime `device-id.ts`），每次登录 / 注册都带同一个；route handler 只转发，绝不按请求现编，缺失或不合规由后端拒绝（`DEVICE_ID_REQUIRED` / `INVALID_DEVICE_ID`）。
 
 ### 9.3 运行时调整
 
