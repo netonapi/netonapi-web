@@ -36,7 +36,8 @@ export default function Page() {
   const discount = (bp?: number | null) => {
     if (bp == null) return "—";
     const scale = Number(t("models.discount_scale")) || 1000;
-    return bp >= 10000 ? t("models.times_official", { x: String(Number((bp / 10000).toFixed(2))) }) : t("models.of_official", { x: String(Number((bp / scale).toFixed(2))) });
+    if (bp === 10000) return t("models.same_official");
+    return bp > 10000 ? t("models.times_official", { x: String(Number((bp / 10000).toFixed(2))) }) : t("models.of_official", { x: String(Number((bp / scale).toFixed(2))) });
   };
 
   const columns: DataColumn<Row>[] = [

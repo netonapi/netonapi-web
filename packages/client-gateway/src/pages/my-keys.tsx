@@ -18,7 +18,7 @@ interface MyToken {
   rpmLimit?: number | null; tpmLimit?: number | null; concurrencyLimit?: number | null;
   status: number; createdAt?: number | null;
   /** 计费分组（决定线路与倍率）；groupAssigned = 运营指定的，用户改不了。 */
-  group: string; groupAssigned: boolean;
+  group: string; groupAssigned: boolean; groupName?: string | null;
 }
 interface GroupOption { code: string; name: string; description?: string | null; ratio: string; hasModelPrices?: boolean }
 
@@ -193,7 +193,7 @@ client = Anthropic(base_url="${base}", api_key="${sampleKey}")`}</pre>
   -H "Content-Type: application/json" \\
   -d '{"model": "gpt-4o", "messages": [{"role": "user", "content": "hi"}]}'`}</pre>
       {info ? (
-        <p style={{ margin: 0, fontSize: 12, color: "var(--muted-foreground)" }}>
+        <p style={{ margin: 0, fontSize: 12, color: "var(--muted-foreground)", overflowWrap: "anywhere" }}>
           {t("keys.integration.endpoints", { endpoints: info.endpoints.map((e) => e.path).join(t("keys.integration.sep")), base })}
         </p>
       ) : null}
@@ -342,7 +342,7 @@ export default function Page() {
     { key: "name", header: t("keys.col.name"), cell: (r) => r.name },
     { key: "display", header: "Key", cell: (r) => <code>{r.display}</code> },
     { key: "quota", header: t("keys.col.quota"), cell: (r) => `${usd(r.quotaUsed)} / ${r.quotaBudget != null ? usd(r.quotaBudget) : t("keys.unlimited")}` },
-    { key: "group", header: t("keys.col.group"), cell: (r) => <span>{groupName(r.group)}{r.groupAssigned ? <span className="ml-1 text-[11px] text-[var(--muted-foreground)]">{t("keys.group.assigned_tag")}</span> : null}</span> },
+    { key: "group", header: t("keys.col.group"), cell: (r) => <span>{r.groupName || groupName(r.group)}{r.groupAssigned ? <span className="ml-1 text-[11px] text-[var(--muted-foreground)]">{t("keys.group.assigned_tag")}</span> : null}</span> },
     { key: "models", header: t("keys.col.models"), cell: (r) => r.allowedModels ? r.allowedModels : t("keys.models.all_short") },
     { key: "limits", header: t("keys.col.limits"), cell: limits },
     { key: "expiresAt", header: t("keys.col.expires"), cell: (r) => (r.expiresAt ? formatDateTime(r.expiresAt) : t("keys.no_expiry")) },

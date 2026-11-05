@@ -256,6 +256,7 @@ const messages: Record<string, string> = {
   "models.col.your_price": "你的价格（入/出）",
   "models.col.discount": "相当于",
   "models.of_official": "官方价 {x} 折",
+  "models.same_official": "原价",
   "models.times_official": "官方价 {x} 倍",
   "models.discount_scale": "1000",
   "models.per_request_price": "${price}/次",

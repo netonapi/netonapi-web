@@ -145,11 +145,11 @@ export default function Page() {
       <div style={grid(2)}>
         <Card>
           <CardHeader><CardTitle>{t("usage.by_model")}</CardTitle></CardHeader>
-          <CardContent><DataTable columns={modelCols} rows={stats?.byModel ?? []} rowKey={(r) => r.model} loading={!stats} /></CardContent>
+          <CardContent><DataTable columns={modelCols} rows={stats?.byModel ?? []} rowKey={(r) => r.model} loading={!stats} minWidth={0} /></CardContent>
         </Card>
         <Card>
           <CardHeader><CardTitle>{t("usage.by_key")}</CardTitle></CardHeader>
-          <CardContent><DataTable columns={tokenCols} rows={stats?.byToken ?? []} rowKey={(r) => r.tokenId} loading={!stats} /></CardContent>
+          <CardContent><DataTable columns={tokenCols} rows={stats?.byToken ?? []} rowKey={(r) => r.tokenId} loading={!stats} minWidth={0} /></CardContent>
         </Card>
       </div>
 

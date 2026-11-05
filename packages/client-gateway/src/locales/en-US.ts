@@ -256,6 +256,7 @@ const messages: Record<string, string> = {
   "models.col.your_price": "Your price (in/out)",
   "models.col.discount": "Equals",
   "models.of_official": "{x}% of official",
+  "models.same_official": "Official price",
   "models.times_official": "{x}× official",
   "models.discount_scale": "100",
   "models.per_request_price": "${price}/req",
